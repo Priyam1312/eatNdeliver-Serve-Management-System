@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatNdeliver - Food & Groceries Delivered</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <style>
+        /* ===== LOADING SCREEN ===== */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            opacity: 1;
+            transition: opacity 0.8s ease;
+        }
+
+        .loading-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 6rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, rgba(238, 208, 15, 0.9), rgba(255, 255, 255, 0.8), rgba(238, 208, 15, 0.9));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: loadingGlow 2s ease-in-out infinite, loadingShine 3s linear infinite;
+            text-shadow: 0 0 40px rgba(238, 208, 15, 0.5);
+        }
+
+        @keyframes loadingGlow {
+            0%, 100% {
+                filter: brightness(1);
+                transform: scale(1);
+            }
+            50% {
+                filter: brightness(1.3);
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes loadingShine {
+            0% {
+                background-position: -200% center;
+            }
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        /* ===== ZOMITO REDIRECT LOADING SCREEN ===== */
+        .zomito-redirect-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.95);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .zomito-redirect-loading.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .zomito-loading-center {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: zomitoFadeIn 1s ease-out 0.5s forwards;
+            text-align: center;
+        }
+
+        @keyframes zomitoFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .zomito-welcome-message {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: zomitoFadeIn 1s ease-out 1s forwards;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .zomito-loading-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .zomito-dot {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: zomitoDotBounce 1.5s infinite;
+        }
+
+        .zomito-dot:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .zomito-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .zomito-dot:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        @keyframes zomitoDotBounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.3;
+            }
+            30% {
+                transform: translateY(-20px);
+                opacity: 1;
+            }
+        }
+
+        .zomito-redirect-text {
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 30px;
+            opacity: 0.8;
+            animation: zomitoFadeIn 1s ease-out 1.5s forwards;
+            text-align: center;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background-color: #fff;
+            color: #333;
+        }
+
+        /* ===== NAVBAR STYLES ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0.98) !important;
+            padding: 8px 0 !important;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            height: 60px;
+        }
+
+        .navbar.scrolled {
+            padding: 5px 0 !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .container {
+            max-width: 1200px;
+            padding-left: 20px;
+            padding-right: 20px;
+            height: 100%;
+        }
+
+        .navbar-brand {
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        .navbar-brand-text {
+            font-family: 'Playfair Display', serif;
+            color: rgba(238, 208, 15, 0.87) !important;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: inline-block;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-collapse {
+            align-items: center;
+        }
+        
+        /* Advanced Navbar Link Animations */
+        .nav-link {
+            color: #555 !important;
+            font-weight: 500;
+            margin: 0 15px;
+            position: relative;
+            padding: 8px 0 !important;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background: rgba(238, 208, 15, 0.87);
+            border-radius: 1px;
+            transition: width 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            right: 0;
+            background: rgba(238, 208, 15, 0.87);
+            border-radius: 1px;
+            transition: width 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .nav-link:hover::before,
+        .nav-link.active::before {
+            width: 50%;
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 50%;
+        }
+
+        .nav-link:hover {
+            color: rgba(238, 208, 15, 0.87) !important;
+        }
+
+        .nav-link.active {
+            color: rgba(238, 208, 15, 0.87) !important;
+            font-weight: 600;
+        }
+
+        .nav-link.active::before,
+        .nav-link.active::after {
+            width: 50%;
+        }
+        
+
+        /* ===== HERO SECTION (FIRST PAGE) ===== */
+        .hero-section {
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Background Slideshow */
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .bg-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: slideAnimation 18s infinite;
+            filter: brightness(0.9);
+        }
+
+        .bg-slide:nth-child(1) {
+            background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1381&q=80');
+            animation-delay: 0s;
+        }
+
+        .bg-slide:nth-child(2) {
+            background-image: url('https://images.unsplash.com/photo-1482049016688-2d3e1b311543?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1310&q=80');
+            animation-delay: 6s;
+        }
+
+        .bg-slide:nth-child(3) {
+            background-image: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1480&q=80');
+            animation-delay: 12s;
+        }
+
+        @keyframes slideAnimation {
+            0% {
+                opacity: 0;
+                transform: scale(1.05);
+            }
+            10% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            30% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            40% {
+                opacity: 0;
+                transform: scale(1.05);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1.05);
+            }
+        }
+
+        .hero-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            padding: 0;
+            opacity: 1;
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: 5rem;
+            font-weight: 800;
+            line-height: 0.9;
+            margin-bottom: 0;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            letter-spacing: -2px;
+        }
+
+        .hero-title span {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .hero-title .eat {
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .hero-title .entertain {
+            color: rgba(238, 208, 15, 0.87);
+            font-weight: 800;
+        }
+
+        .hero-title .deliver {
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            font-weight: 400;
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* ===== SLIDING BOX SECTION ===== */
+        .sliding-box-section {
+            min-height: 100vh;
+            padding: 100px 0;
+            background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .sliding-box-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .sliding-box {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            transform: translateX(-100%);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .sliding-box.visible {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .sliding-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, rgba(238, 208, 15, 0.87), #ff6b6b, #1dd1a1);
+        }
+
+        .sliding-box-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #333;
+            position: relative;
+            display: inline-block;
+        }
+
+        .sliding-box-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: rgba(238, 208, 15, 0.87);
+            border-radius: 2px;
+        }
+
+        .sliding-box-content {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            border-color: rgba(238, 208, 15, 0.87);
+            box-shadow: 0 10px 30px rgba(238, 208, 15, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: rgba(238, 208, 15, 0.87);
+            margin-bottom: 20px;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* ===== ZOMITO SECTION ===== */
+        .zomito-section {
+            min-height: 80vh;
+            padding: 100px 0;
+            background: linear-gradient(to right, rgba(255, 0, 0, 0.05), rgba(255, 255, 255, 0.9));
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .zomito-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .zomito-box {
+            background: linear-gradient(to right, rgba(255, 0, 0, 0.08), rgba(255, 255, 255, 0.95));
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow: 0 20px 50px rgba(255, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            transform: translateX(-100%);
+            opacity: 0;
+            transition: all 0.9s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+        }
+
+        .zomito-box.visible {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .zomito-content {
+            flex: 1;
+        }
+
+        .zomito-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .zomito-subtitle {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0;
+            max-width: 500px;
+            line-height: 1.6;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .zomito-btn-container {
+            position: absolute;
+            top: 50%;
+            right: 60px;
+            transform: translateY(-50%);
+        }
+
+        .zomito-btn {
+            display: inline-block;
+            padding: 14px 35px;
+            background: #ff0000;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid #ff0000;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            letter-spacing: 0.5px;
+        }
+
+        .zomito-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.7s ease;
+            z-index: -1;
+        }
+
+        .zomito-btn:hover {
+            background: white;
+            color: #ff0000;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(255, 0, 0, 0.2);
+        }
+
+        .zomito-btn:hover::before {
+            left: 100%;
+        }
+
+        .zomito-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        /* ===== ABOUT SECTION ===== */
+        .about-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            position: relative;
+        }
+
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .about-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0.9;
+        }
+
+        .about-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: rgba(238, 208, 15, 0.87);
+            border-radius: 2px;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border-top: 4px solid rgba(238, 208, 15, 0.87);
+            opacity: 0.95;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: rgba(238, 208, 15, 0.87);
+            margin-bottom: 8px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: #1a1a1a;
+            color: white;
+            padding: 60px 0 30px;
+            position: relative;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, rgba(238, 208, 15, 0.87), #ff0000, rgba(238, 208, 15, 0.87));
+        }
+
+        .footer-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: rgba(238, 208, 15, 0.87);
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h4 {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .footer-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: rgba(238, 208, 15, 0.87);
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #bbb;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .footer-section ul li a:hover {
+            color: rgba(238, 208, 15, 0.87);
+            padding-left: 5px;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #333;
+            color: #888;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* ===== SCROLL DOWN ARROW ===== */
+        .scroll-down-arrow {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+            z-index: 2;
+            opacity: 0.9;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-5px) translateX(-50%);
+            }
+        }
+
+        /* ===== ANIMATION UTILITIES ===== */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: all 0.7s ease;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1200px) {
+            .hero-title {
+                font-size: 4.5rem;
+            }
+            
+            .zomito-title {
+                font-size: 3rem;
+            }
+            
+            .sliding-box-title {
+                font-size: 3rem;
+            }
+            
+            .zomito-loading-center {
+                font-size: 4rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .hero-title {
+                font-size: 3.8rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .sliding-box {
+                padding: 40px;
+            }
+            
+            .zomito-box {
+                padding: 40px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .zomito-btn-container {
+                position: relative;
+                top: auto;
+                right: auto;
+                transform: none;
+                margin-top: 30px;
+            }
+            
+            .zomito-title {
+                font-size: 2.5rem;
+            }
+            
+            .about-title {
+                font-size: 2.2rem;
+            }
+            
+            .nav-link {
+                margin: 0 10px;
+                font-size: 0.9rem;
+            }
+            
+            .zomito-loading-center {
+                font-size: 3.5rem;
+            }
+            
+            .zomito-welcome-message {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+                max-width: 90%;
+            }
+            
+            .sliding-box {
+                padding: 30px;
+            }
+            
+            .sliding-box-title,
+            .zomito-title {
+                font-size: 2.2rem;
+            }
+            
+            .zomito-box {
+                padding: 30px 25px;
+            }
+            
+            .zomito-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .about-title {
+                font-size: 2rem;
+            }
+            
+            .stat-item {
+                padding: 25px;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+            
+            .navbar-brand-text {
+                font-size: 1.5rem;
+            }
+            
+            .loading-brand {
+                font-size: 4rem;
+            }
+            
+            .zomito-loading-center {
+                font-size: 3rem;
+            }
+            
+            .zomito-welcome-message {
+                font-size: 1.3rem;
+            }
+            
+            .zomito-dot {
+                width: 15px;
+                height: 15px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .sliding-box-title,
+            .zomito-title {
+                font-size: 1.8rem;
+            }
+            
+            .zomito-box {
+                padding: 25px 20px;
+            }
+            
+            .about-title {
+                font-size: 1.8rem;
+            }
+            
+            .stat-number {
+                font-size: 2.2rem;
+            }
+            
+            .navbar-brand-text {
+                font-size: 1.3rem;
+            }
+            
+            .loading-brand {
+                font-size: 3rem;
+            }
+            
+            .nav-link {
+                margin: 0 5px;
+                font-size: 0.85rem;
+            }
+            
+            .hero-section {
+                height: 100vh;
+            }
+            
+            .zomito-loading-center {
+                font-size: 2.5rem;
+            }
+            
+            .zomito-welcome-message {
+                font-size: 1.1rem;
+            }
+            
+            .zomito-dot {
+                width: 12px;
+                height: 12px;
+            }
+            
+            .zomito-redirect-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-brand">eatNdeliver</div>
+    </div>
+
+    <!-- Zomito Redirect Loading Screen -->
+    <div class="zomito-redirect-loading" id="zomitoRedirectLoading">
+        <div class="zomito-loading-center">ZOMITO</div>
+        <div class="zomito-welcome-message">Welcome to Food Paradise</div>
+        <div class="zomito-loading-dots">
+            <div class="zomito-dot"></div>
+            <div class="zomito-dot"></div>
+            <div class="zomito-dot"></div>
+        </div>
+        <div class="zomito-redirect-text">Redirecting to Zomito...</div>
+    </div>
+
+        <!-- Navbar -->
+     <nav class="navbar navbar-expand-lg navbar-light" id="mainNavbar">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="#home">
+                <span class="navbar-brand-text">eatNdeliver</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">
+                            <span>Services</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#zomito">
+                            <span>ZOMITO</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">
+                            <span>About</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="hero-bg">
+            <div class="bg-slide"></div>
+            <div class="bg-slide"></div>
+            <div class="bg-slide"></div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="eat">eat.</span>
+                <span class="entertain">entertain.</span>
+                <span class="deliver">deliver.</span>
+            </h1>
+            <p class="hero-subtitle">
+                Premium food delivery and entertainment services, 
+                bringing quality and convenience directly to your doorstep. 
+                Experience excellence redefined.
+            </p>
+        </div>
+        <div class="scroll-down-arrow" onclick="scrollToSection('services')">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Sliding Box Section -->
+    <section id="services" class="sliding-box-section">
+        <div class="sliding-box-container">
+            <div class="sliding-box" id="slidingBox">
+                <h2 class="sliding-box-title">Our Premium Services</h2>
+                <p class="sliding-box-content">
+                    At eatNdeliver, we combine innovation with exceptional service 
+                    to deliver unparalleled experiences. From gourmet dining to 
+                    premium entertainment solutions, every delivery is crafted 
+                    with precision and care.
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3 class="feature-title">Lightning Fast</h3>
+                        <p class="feature-description">
+                            Delivery in under 30 minutes. We prioritize speed without compromising quality.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3 class="feature-title">100% Safe</h3>
+                        <p class="feature-description">
+                            Contactless delivery and rigorous safety standards for your peace of mind.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3 class="feature-title">Premium Quality</h3>
+                        <p class="feature-description">
+                            Partnering with top-rated restaurants and verified suppliers only.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Zomito Section -->
+    <section id="zomito" class="zomito-section">
+        <div class="zomito-container">
+            <div class="zomito-box" id="zomitoBox">
+                <div class="zomito-content">
+                    <h2 class="zomito-title">ZOMITO</h2>
+                    <p class="zomito-subtitle">
+                        Discover the future of food delivery with our exclusive partner. 
+                        Redefining culinary experiences, one exceptional meal at a time.
+                    </p>
+                </div>
+                <div class="zomito-btn-container">
+                    <a href="#" class="zomito-btn" onclick="redirectToZomito(event)">
+                        <i class="fas fa-external-link-alt me-2"></i> Click Here
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="about-container">
+            <h2 class="about-title">About eatNdeliver</h2>
+            
+            <div class="about-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="stat1">5M+</div>
+                    <div class="stat-label">Happy Customers</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number" id="stat2">50+</div>
+                    <div class="stat-label">Cities Served</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number" id="stat3">5000+</div>
+                    <div class="stat-label">Partners</div>
+                </div>
+                
+                <div class="stat-item">
+                    <div class="stat-number" id="stat4">24/7</div>
+                    <div class="stat-label">Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <div class="footer-section">
+                    <div class="footer-brand">eatNdeliver</div>
+                    <p style="color: #bbb; margin-bottom: 20px; font-weight: 300; line-height: 1.6;">
+                        Delivering exceptional experiences, one order at a time. 
+                        Excellence in every delivery.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#zomito">ZOMITO</a></li>
+                        <li><a href="#about">About Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><a href="mailto:support@eatndeliver.com">support@eatndeliver.com</a></li>
+                        <li><a href="tel:+18005551234">1-800-555-1234</a></li>
+                        <li>123 Delivery Street</li>
+                        <li>Food City, FC 12345</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Follow Us</h4>
+                    <ul>
+                        <li><a href="#"><i class="fab fa-facebook me-2"></i> Facebook</a></li>
+                        <li><a href="#"><i class="fab fa-twitter me-2"></i> Twitter</a></li>
+                        <li><a href="#"><i class="fab fa-instagram me-2"></i> Instagram</a></li>
+                        <li><a href="#"><i class="fab fa-linkedin me-2"></i> LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 eatNdeliver. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Initialize loading screen
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            
+            // Show loading screen briefly
+            setTimeout(() => {
+                loadingScreen.classList.add('fade-out');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 800);
+            }, 1500);
+            
+            // Initialize scroll animations
+            initScrollAnimations();
+            
+            // Initialize counter animations
+            initCounterAnimations();
+        });
+
+        // Scroll to section function
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                window.scrollTo({
+                    top: section.offsetTop - 60,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Redirect to Zomago with loading animation
+        function redirectToZomito(event) {
+            event.preventDefault();
+            
+            // Show the Zomito redirect loading screen
+            const zomitoRedirectLoading = document.getElementById('zomitoRedirectLoading');
+            zomitoRedirectLoading.classList.add('active');
+            
+            // After animation completes, redirect to zomago.html
+            setTimeout(() => {
+                window.location.href = 'zomago.html';
+            }, 2500);
+        }
+
+        // Initialize scroll animations
+        function initScrollAnimations() {
+            const slidingBox = document.getElementById('slidingBox');
+            const zomitoBox = document.getElementById('zomitoBox');
+            
+            // Check initial state
+            checkScroll();
+            
+            // Add scroll listener
+            window.addEventListener('scroll', checkScroll);
+            
+            // Smooth scroll for nav links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetSection = document.querySelector(targetId);
+                    if (targetSection) {
+                        window.scrollTo({
+                            top: targetSection.offsetTop - 60,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        }
+
+        // Check scroll position for animations
+        function checkScroll() {
+            const slidingBox = document.getElementById('slidingBox');
+            const zomitoBox = document.getElementById('zomitoBox');
+            
+            // Sliding box animation
+            if (isElementInViewport(slidingBox)) {
+                slidingBox.classList.add('visible');
+            }
+            
+            // Zomito box animation
+            if (isElementInViewport(zomitoBox)) {
+                zomitoBox.classList.add('visible');
+            }
+            
+            // Update active nav link
+            updateActiveNavLink();
+        }
+
+        // Check if element is in viewport
+        function isElementInViewport(el) {
+            if (!el) return false;
+            const rect = el.getBoundingClientRect();
+            return (
+                rect.top <= window.innerHeight * 0.75 &&
+                rect.bottom >= 0
+            );
+        }
+
+        // Initialize counter animations
+        function initCounterAnimations() {
+            const stats = [
+                { element: document.getElementById('stat1'), start: 0, end: 5, suffix: 'M+' },
+                { element: document.getElementById('stat2'), start: 0, end: 50, suffix: '+' },
+                { element: document.getElementById('stat3'), start: 0, end: 5000, suffix: '+' },
+                { element: document.getElementById('stat4'), start: 0, end: 24, suffix: '/7' }
+            ];
+            
+            let animated = false;
+            
+            function animateStats() {
+                if (!animated && isElementInViewport(stats[0].element)) {
+                    animated = true;
+                    stats.forEach(stat => {
+                        if (stat.element) {
+                            animateCounter(stat.element, stat.start, stat.end, stat.suffix, 2000);
+                        }
+                    });
+                }
+            }
+            
+            // Check on scroll
+            window.addEventListener('scroll', animateStats);
+            // Initial check
+            animateStats();
+        }
+
+        // Animate counter
+        function animateCounter(element, start, end, suffix, duration) {
+            let startTime = null;
+            
+            function updateCounter(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = timestamp - startTime;
+                const percentage = Math.min(progress / duration, 1);
+                
+                // Easing function
+                const easeOut = 1 - Math.pow(1 - percentage, 3);
+                const currentValue = Math.floor(start + (end - start) * easeOut);
+                
+                if (suffix === 'M+') {
+                    element.textContent = currentValue + suffix;
+                } else if (suffix === '+' && end >= 1000) {
+                    element.textContent = (currentValue / 1000).toFixed(0) + 'K+';
+                } else {
+                    element.textContent = currentValue + suffix;
+                }
+                
+                if (percentage < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+            
+            requestAnimationFrame(updateCounter);
+        }
+
+        // Update active nav link
+        function updateActiveNavLink() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                
+                if (window.scrollY >= (sectionTop - 100)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,3549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zomito - Food Delivery</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800;900&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CUSTOM SCROLLBAR - SOFT RED ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f8f9fa;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 0, 0, 0.3);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: red;
+        }
+
+        /* ===== REVERSE STRIP TRANSITION ANIMATIONS ===== */
+        @keyframes reverseStripMarquee {
+            0% {
+                transform: translateX(100%) translateY(-50%);
+                opacity: 0;
+            }
+            15% {
+                opacity: 1;
+            }
+            85% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-100%) translateY(-50%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes stripCenterFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* ===== ZOMEXA POPUP NOTIFICATION ===== */
+        .zomexa-popup {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff0000 0%, #ff5252 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(150%);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 350px;
+            border: 2px solid white;
+        }
+
+        .zomexa-popup.show {
+            transform: translateX(0);
+        }
+
+        .zomexa-popup-icon {
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .zomexa-popup-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .zomexa-popup-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-left: auto;
+            padding: 5px;
+        }
+
+        /* Navbar animation */
+        @keyframes slideDownNavbar {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+            background-color: #fff;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 0, 0, 0.3) #f8f9fa;
+        }
+
+        /* ===== REVERSE STRIP ENTRANCE TRANSITION ===== */
+        .zomito-entrance {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.95);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .zomito-entrance.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .reverse-strip-container {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .reverse-strip-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: white;
+            display: inline-block;
+            animation: reverseStripMarquee 2s ease-in-out forwards;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            letter-spacing: 4px;
+            opacity: 0;
+            transform: translateX(100%) translateY(-50%);
+        }
+
+        .reverse-strip-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            animation: stripCenterFadeIn 0.8s ease-out 0.5s forwards;
+            z-index: 2;
+        }
+
+        .welcome-message {
+            position: absolute;
+            top: 65%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeInOut 2s ease-in-out 0.8s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            animation: slideDownNavbar 0.6s ease-out 0.3s both;
+            padding: 5px 0 !important;
+            background-color: white !important;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 1px 10px rgba(0, 0, 0, 0.08);
+            border-bottom: 4px solid rgba(255, 0, 0);
+        }
+
+        .navbar .container-fluid {
+            max-width: 100%;
+            padding-left: 15px !important;
+            padding-right: 15px !important;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            margin-right: 20px !important;
+            padding-left: 0 !important;
+            flex-shrink: 0;
+        }
+
+         .navbar-brand-text {
+            font-family: 'Playfair Display', serif;
+            color:#0a0a0a  !important;
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: inline-block;
+        }
+
+        /* Location and Search Section */
+        .location-search-container {
+            display: flex;
+            align-items: center;
+            gap: 0px;
+            flex: 1;
+            margin: 0 20px;
+            min-width: 0;
+            max-width: 800px;
+        }
+
+        .location-btn {
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #333;
+            font-weight: 400;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+        }
+
+        .location-btn:hover {
+            background-color: rgba(255, 0, 0, 0.05);
+            color: #ff0000;
+        }
+
+        .location-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            min-width: 180px;
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+        }
+
+        .location-btn:hover .location-dropdown {
+            display: block;
+        }
+
+        .location-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f5f5f5;
+            font-weight: 400;
+        }
+
+        .location-option:hover {
+            background-color: rgba(255, 0, 0, 0.05);
+            color: #ff0000;
+        }
+
+        .location-option.active {
+            background-color: rgba(255, 0, 0, 0.05);
+            color: #ff0000;
+            font-weight: 500;
+        }
+
+        .search-container {
+            flex: 1;
+            position: relative;
+            min-width: 200px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 15px 8px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 400;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(255, 0, 0, 0.3);
+            box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+            font-size: 1rem;
+        }
+
+        .nav-link {
+            color: #333 !important;
+            font-weight: 500;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+            position: relative;
+            opacity: 0;
+            animation: popIn 0.5s ease-out forwards;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .nav-link:nth-child(1) {
+            animation-delay: 0.4s;
+        }
+
+        .nav-link:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .nav-link:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .nav-link:hover {
+            color: #ff0000 !important;
+        }
+
+        .nav-link.active {
+            color: #ff0000 !important;
+            font-weight: 500;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(255, 0, 0, 0.3);
+            border-radius: 1px;
+        }
+
+        /* ===== HOME BUTTON IN NAVBAR ===== */
+        .home-btn {
+            margin-right: 10px;
+            color: #ff0000 !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* ===== DINING/DELIVERY BUTTONS SECTION ===== */
+        .dining-delivery-section {
+            padding-top: 120px;
+            padding-bottom: 40px;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+
+        .dining-delivery-title {
+            font-family: 'Playfair Display', serif;
+            color: #333;
+            font-size: 2.8rem;
+            font-weight: 600;
+            margin-bottom: 40px;
+        }
+
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        .option-btn {
+            width: 280px;
+            height: 180px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            background: white;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .option-btn.active {
+            background: rgba(255, 0, 0, 0.03);
+            border: 1.5px solid rgba(255, 0, 0, 0.3);
+        }
+
+        .option-btn.active::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 17px;
+            background: linear-gradient(45deg, rgba(255, 0, 0, 0.3), rgba(255, 107, 107, 0.3), rgba(255, 0, 0, 0.3));
+            background-size: 400% 400%;
+            z-index: -1;
+            animation: moveBorder 3s ease infinite;
+        }
+
+        @keyframes moveBorder {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .option-btn.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 14px;
+            background: white;
+            z-index: -1;
+        }
+
+        .option-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: rgba(255, 0, 0, 0.7);
+            transition: transform 0.3s ease;
+        }
+
+        .option-btn:hover .option-icon {
+            transform: scale(1.1);
+        }
+
+        .option-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .option-subtitle {
+            color: #666;
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* ===== WHAT TO ORDER SECTION (CIRCLE CUISINES) ===== */
+        /* ===== WHAT TO ORDER SECTION (CIRCLE CUISINES) ===== */
+.what-to-order-section {
+    padding: 50px 0;
+    background-color: white;
+}
+
+.section-title {
+    font-family: 'Playfair Display', serif;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+.cuisine-circles {
+    display: flex;
+    justify-content: space-between;
+    overflow-x: auto;
+    padding: 20px 0;
+    gap: 25px;
+}
+
+.cuisine-circle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+    text-decoration: none;
+    color: #333;
+    position: relative;
+    padding-bottom: 30px; /* Add space for Zomexa button */
+}
+
+/* Updated CSS for cuisine-icon with background images */
+.cuisine-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(255, 107, 107, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #ff0000;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Remove the Font Awesome icon styling when using background images */
+.cuisine-icon i {
+    display: none;
+}
+
+/* Add an overlay for better text/icon visibility if needed */
+.cuisine-icon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    z-index: 1;
+}
+
+
+/* NEW: Cuisine name styling */
+.cuisine-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 8px;
+    color: #333;
+    max-width: 80px;
+    word-wrap: break-word;
+    line-height: 1.2;
+}
+
+/* UPDATED: Zomexa Button positioned below cuisine circle */
+.zomexa-cuisine-btn {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 0, 0, 0.9);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    z-index: 2;
+    box-shadow: 0 3px 10px rgba(255, 0, 0, 0.3);
+    margin-top: 5px;
+}
+
+.zomexa-cuisine-btn:hover {
+    transform: translateX(-50%) scale(1.2);
+    background: #ff0000;
+}
+
+/* NEW: Add tooltip on hover for Zomexa button */
+.zomexa-cuisine-btn::after {
+    content: 'Ask Zomexa';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    margin-bottom: 5px;
+}
+
+.zomexa-cuisine-btn:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Add arrow to tooltip */
+.zomexa-cuisine-btn::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #333;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: -3px;
+}
+
+.zomexa-cuisine-btn:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+        /* ===== PURPOSE/SLIDING TEXT SECTION ===== */
+        .purpose-section {
+            padding: 40px 0;
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(255, 107, 107, 0.05) 100%);
+            border-top: 1px solid rgba(255, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .sliding-text-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .sliding-text {
+            display: inline-block;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            padding: 15px 0;
+            font-family: 'Playfair Display', serif;
+            animation: slideText 30s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes slideText {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        /* Pause animation on hover */
+        .sliding-text-container:hover .sliding-text {
+            animation-play-state: paused;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background-color: #2d3436;
+            color: #fff;
+            padding: 50px 0 25px;
+            margin-top: 60px;
+        }
+
+        .footer-title {
+            font-family: 'Playfair Display', serif;
+            color: #ff0000;
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .footer-section-title {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #ff0000;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 400;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: #ff0000;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            color: #ddd;
+            font-size: 1.3rem;
+            transition: color 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: #ff0000;
+        }
+
+        .app-download {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .app-btn {
+            display: inline-block;
+            background: #333;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .app-btn:hover {
+            background: #ff0000;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .dining-delivery-title {
+                font-size: 2rem;
+            }
+            
+            .option-btn {
+                width: 220px;
+                height: 160px;
+            }
+            
+            .option-title {
+                font-size: 1.5rem;
+            }
+            
+            .option-icon {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .options-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 25px;
+            }
+            
+            .option-btn {
+                width: 85%;
+                height: 150px;
+            }
+            
+            .option-title {
+                font-size: 1.4rem;
+            }
+            
+            .option-icon {
+                font-size: 2.2rem;
+            }
+            
+            .dining-delivery-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* ===== ENHANCED ZOMEXA MODAL ===== */
+        .zomexa-modal .modal-dialog {
+            max-width: 500px;
+        }
+
+        .zomexa-modal .modal-content {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 0, 0, 0.1);
+            box-shadow: 0 15px 40px rgba(255, 0, 0, 0.2);
+        }
+
+        .zomexa-modal .modal-header {
+            background: linear-gradient(135deg, #ff0000 0%, #ff3333 100%);
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+        }
+
+        .zomexa-modal .modal-header .modal-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .zomexa-modal .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+            opacity: 0.8;
+        }
+
+        .zomexa-modal .modal-body {
+            padding: 0;
+            background: #f8f9fa;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        /* Chat Messages Container */
+        .chat-messages-container {
+            padding: 20px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Message Styles */
+        .chat-message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            animation: messageSlideIn 0.3s ease-out;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bot-message {
+            background: white;
+            color: #333;
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            align-self: flex-start;
+            border-top-left-radius: 5px;
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, #ff0000 0%, #ff5252 100%);
+            color: white;
+            align-self: flex-end;
+            border-top-right-radius: 5px;
+        }
+
+        /* Restaurant Suggestions in Chat */
+        .restaurant-suggestion {
+            background: white;
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .restaurant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .restaurant-name {
+            color: #ff0000;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .restaurant-rating {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff0000;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .restaurant-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .restaurant-detail {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .restaurant-detail i {
+            color: #ff0000;
+            width: 16px;
+        }
+
+        .explore-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ff0000 0%, #ff5252 100%);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .explore-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.2);
+        }
+
+        /* Login Prompt */
+        .login-prompt {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 0, 0, 0.03);
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 0, 0, 0.1);
+        }
+
+        .login-prompt-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .login-btn, .signup-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .login-btn {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff0000;
+            border: 1px solid rgba(255, 0, 0, 0.2);
+        }
+
+        .signup-btn {
+            background: linear-gradient(135deg, #ff0000 0%, #ff5252 100%);
+            color: white;
+        }
+
+        .login-btn:hover, .signup-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            align-self: flex-start;
+            width: fit-content;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 0, 0, 0.5);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+        }
+
+        /* Quick Suggestions */
+        .quick-suggestions {
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .quick-suggestion {
+            background: rgba(255, 0, 0, 0.05);
+            color: #ff0000;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 0, 0, 0.1);
+        }
+
+        .quick-suggestion:hover {
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        /* ===== CART STYLES ===== */
+        .cart-count-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff0000;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Smooth Modal Transitions */
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+.modal.show .modal-dialog {
+    transform: none;
+}
+
+.zomexa-modal .modal-dialog {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+    </style>
+</head>
+<body>
+    <!-- Zomexa Popup Notification -->
+    <div class="zomexa-popup" id="zomexaPopup">
+        <i class="fas fa-robot zomexa-popup-icon"></i>
+        <div class="zomexa-popup-text">Click the <strong>Zomexa</strong> button to get personalized food recommendations!</div>
+        <button class="zomexa-popup-close" id="closeZomexaPopup">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- Zomito Reverse Strip Entrance Transition -->
+    <div class="zomito-entrance" id="zomitoEntrance">
+        <div class="reverse-strip-container">
+            <div class="reverse-strip-text" id="reverseStripText">Food Delivery</div>
+        </div>
+        <div class="reverse-strip-center" id="reverseStripCenter">ZOMITO</div>
+        <div class="welcome-message" id="welcomeMessage">Welcome to Food Paradise</div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <span class="navbar-brand-text">Zomito</span>
+            </a>
+
+            <div class="location-search-container">
+                <div class="location-btn">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="current-city">Ahmedabad</span>
+                    <i class="fas fa-chevron-down"></i>
+                    <div class="location-dropdown">
+                        <div class="location-option active" data-city="Ahmedabad">Ahmedabad</div>
+                        <div class="location-option" data-city="Delhi">Delhi</div>
+                        <div class="location-option" data-city="Mumbai">Mumbai</div>
+                        <div class="location-option" data-city="Jaipur">Jaipur</div>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search for restaurants, cuisines, dishes...">
+                </div>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <!-- Home Button - Redirects to index.html -->
+                    <li class="nav-item">
+                        <a class="nav-link home-btn" href="index.html">
+                             Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#what-to-order">What to Order</a>
+                    </li>
+                   
+                    
+                    <li class="nav-item" id="cartNavItem" style="display: none;">
+                        <a class="nav-link position-relative" href="cart.html" id="cartLink">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count-badge" id="cartCount">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <button class="btn btn-link nav-link dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> Login/Sign Up
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li id="login-dropdown-item"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a></li>
+                                <li id="signup-dropdown-item"><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#signupModal">Sign Up</a></li>
+                                <li id="logout-dropdown-item" style="display: none;"><a class="dropdown-item" href="#" onclick="UserSystem.logout()">Logout</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dining/Delivery Section -->
+    <section class="dining-delivery-section">
+        <div class="container">
+            <h2 class="dining-delivery-title">What are you looking for?</h2>
+            <div class="options-container">
+                <a href="zomago.html" class="option-btn" id="dining-btn">
+                    <div class="option-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3 class="option-title">Dining Out</h3>
+                    <p class="option-subtitle">Book restaurants & cafes</p>
+                </a>
+                <a href="#" class="option-btn active" id="delivery-btn">
+                    <div class="option-icon">
+                        <i class="fas fa-motorcycle"></i>
+                    </div>
+                    <h3 class="option-title">Delivery</h3>
+                    <p class="option-subtitle">Order food online</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- What to Order Section (Circle Cuisines) -->
+    <section id="what-to-order" class="what-to-order-section">
+        <div class="container">
+            <h2 class="section-title">Eat what makes you happy</h2>
+            <div class="cuisine-circles">
+               <a href="#" class="cuisine-circle" onclick="event.preventDefault(); filterByCuisine('Veg Meal')">
+    <div class="cuisine-icon" style="background-image: url('images/veg-meal.jpg');">
+        <i class="fas fa-utensils"></i>
+    </div>
+    <p class="cuisine-name">Veg Meal</p>
+    <button class="zomexa-cuisine-btn" onclick="event.stopPropagation(); openZomexaForCuisine('Veg Meal')">
+        <i class="fas fa-robot"></i>
+    </button>
+</a>
+               <a href="#" class="cuisine-circle" onclick="event.preventDefault(); filterByCuisine('biryani')">
+    <div class="cuisine-icon" style="background-image: url('images/biryani.jpg');">
+        <i class="fas fa-utensils"></i>
+    </div>
+    <p class="cuisine-name">Biryani</p>
+    <button class="zomexa-cuisine-btn" onclick="event.stopPropagation(); openZomexaForCuisine('biryani')">
+        <i class="fas fa-robot"></i>
+    </button>
+</a>
+              <a href="#" class="cuisine-circle" onclick="event.preventDefault(); filterByCuisine('pizza')">
+    <div class="cuisine-icon" style="background-image: url('images/pizza.jpg');">
+        <i class="fas fa-utensils"></i>
+    </div>
+    <p class="cuisine-name">Pizza</p>
+    <button class="zomexa-cuisine-btn" onclick="event.stopPropagation(); openZomexaForCuisine('pizza')">
+        <i class="fas fa-robot"></i>
+    </button>
+</a>
+                <a href="#" class="cuisine-circle" onclick="event.preventDefault(); filterByCuisine('burger')">
+    <div class="cuisine-icon" style="background-image: url('images/burger.jpg');">
+        <i class="fas fa-utensils"></i>
+    </div>
+    <p class="cuisine-name">burger</p>
+    <button class="zomexa-cuisine-btn" onclick="event.stopPropagation(); openZomexaForCuisine('burger')">
+        <i class="fas fa-robot"></i>
+    </button>
+</a>
+             <a href="#" class="cuisine-circle" onclick="event.preventDefault(); filterByCuisine('sandwich')">
+    <div class="cuisine-icon" style="background-image: url('images/sandwich.jpg');">
+        <i class="fas fa-utensils"></i>
+    </div>
+    <p class="cuisine-name">sandwich</p>
+    <button class="zomexa-cuisine-btn" onclick="event.stopPropagation(); openZomexaForCuisine('sandwich')">
+        <i class="fas fa-robot"></i>
+    </button>
+</a>
+               <a href="#" class="cuisine-circle" onclick="event.preventDefault(); filterByCuisine('cake')">
+    <div class="cuisine-icon" style="background-image: url('images/cake.jpg');">
+        <i class="fas fa-utensils"></i>
+    </div>
+    <p class="cuisine-name">cake</p>
+    <button class="zomexa-cuisine-btn" onclick="event.stopPropagation(); openZomexaForCuisine('cake')">
+        <i class="fas fa-robot"></i>
+    </button>
+</a>
+                <a href="#" class="cuisine-circle" onclick="event.preventDefault(); filterByCuisine('paratha')">
+    <div class="cuisine-icon" style="background-image: url('images/paratha.jpg');">
+        <i class="fas fa-utensils"></i>
+    </div>
+    <p class="cuisine-name">paratha</p>
+    <button class="zomexa-cuisine-btn" onclick="event.stopPropagation(); openZomexaForCuisine('paratha')">
+        <i class="fas fa-robot"></i>
+    </button>
+</a>
+               <a href="#" class="cuisine-circle" onclick="event.preventDefault(); filterByCuisine('north-indian')">
+    <div class="cuisine-icon" style="background-image: url('images/north-indian.jpg');">
+        <i class="fas fa-utensils"></i>
+    </div>
+    <p class="cuisine-name">North Indian</p>
+    <button class="zomexa-cuisine-btn" onclick="event.stopPropagation(); openZomexaForCuisine('north-indian')">
+        <i class="fas fa-robot"></i>
+    </button>
+</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Purpose Section -->
+    <section class="purpose-section">
+        <div class="container">
+            <div class="sliding-text-container">
+                <p class="sliding-text">Zomexa helps you discover and order the best food from top-rated restaurants in your city. Get personalized recommendations, exclusive deals, and lightning-fast delivery!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h3 class="footer-title">Zomito</h3>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                    <div class="app-download">
+                        <a href="#" class="app-btn">
+                            <i class="fab fa-apple"></i> App Store
+                        </a>
+                        <a href="#" class="app-btn">
+                            <i class="fab fa-google-play"></i> Google Play
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-section-title">ABOUT ZOMITO</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Who We Are</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Work With Us</a></li>
+                        <li><a href="#">Investor Relations</a></li>
+                        <li><a href="#">Report Fraud</a></li>
+                        <li><a href="#">Press Kit</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-section-title">ZOMIVERSE</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Zomito</a></li>
+                        <li><a href="#">Blinkit</a></li>
+                        <li><a href="#">District</a></li>
+                        <li><a href="#">Feeding India</a></li>
+                        <li><a href="#">Hyperpure</a></li>
+                        <li><a href="#">Zomito Live</a></li>
+                        <li><a href="#">Zomaland</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h6 class="footer-section-title">LEARN MORE</h6>
+                    <ul class="footer-links">
+                        <li><a href="#">Privacy</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Terms</a></li>
+                        <li><a href="#">Sitemap</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>By continuing past this page, you agree to our Terms of Service, Cookie Policy, Privacy Policy and
+                    Content Policies. All trademarks are properties of their respective owners. 2008-2026 © Zomito™ Ltd.
+                    All rights reserved.</p>
+                <p><i class="fas fa-sun"></i> 17°C Clear</p>
+            </div>
+        </div>
+    </footer>
+
+     <!-- Modals -->
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login to Zomito</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="loginEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">Login</button>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#forgotPasswordModal" data-bs-dismiss="modal">Forgot Password?</a>
+                        </div>
+                        <div class="text-center mt-3">
+                            <span>Don't have an account? </span>
+                            <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#signupModal" data-bs-dismiss="modal">Sign Up</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   <div class="modal fade" id="signupModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Your Zomito Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="signupForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="firstName" required placeholder="Enter your first name">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="lastName" required placeholder="Enter your last name">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="signupEmail" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="signupEmail" required placeholder="example@email.com">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="signupPhone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="signupPhone" required placeholder="10-digit mobile number">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="signupCity" class="form-label">City <span class="text-danger">*</span></label>
+                            <select class="form-select" id="signupCity" required>
+                                <option value="">Select your city</option>
+                                <option value="Ahmedabad">Ahmedabad</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Jaipur">Jaipur</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="signupAddress" class="form-label">Complete Address <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="signupAddress" rows="3" required placeholder="House no, Building, Street, Area, Landmark"></textarea>
+                            <div class="form-text">We'll use this for delivery. You can update it anytime.</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="signupPassword" class="form-label">Password <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control" id="signupPassword" required placeholder="At least 6 characters">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                <input type="password" class="form-control" id="confirmPassword" required placeholder="Re-enter your password">
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="termsAgreement" required>
+                            <label class="form-check-label" for="termsAgreement">
+                                I agree to Zomito's <a href="#" class="text-danger">Terms of Service</a> and <a href="#" class="text-danger">Privacy Policy</a>
+                            </label>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-user-plus me-2"></i> Create Account
+                            </button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <span>Already have an account? </span>
+                            <a href="#" class="text-decoration-none fw-bold text-danger" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Sign In</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTP Verification Modal -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Verify Your Email</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>We've sent a 6-digit OTP to your email address.</p>
+                    <div class="mb-3">
+                        <label for="otpInput" class="form-label">Enter OTP</label>
+                        <input type="text" class="form-control text-center" id="otpInput" maxlength="6" style="font-size: 24px; letter-spacing: 10px;">
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-danger" id="verifyOtpBtn">Verify OTP</button>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="button" class="btn btn-link" id="resendOtpBtn">Resend OTP</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="forgotPasswordStep1">
+                        <p>Enter your email address to reset your password.</p>
+                        <div class="mb-3">
+                            <label for="resetEmail" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="resetEmail">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-danger" id="sendResetOtpBtn">Send OTP</button>
+                        </div>
+                    </div>
+                    <div id="forgotPasswordStep2" style="display: none;">
+                        <div class="mb-3">
+                            <label for="resetOtp" class="form-label">Enter OTP</label>
+                            <input type="text" class="form-control text-center" id="resetOtp" maxlength="6" style="font-size: 24px; letter-spacing: 10px;">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-danger" id="resetPasswordBtn">Reset Password</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coupon Modal -->
+    <div class="modal fade" id="couponModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">🎉 Welcome to Zomito! 🎉</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="coupon-box p-4 mb-3" style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.9), rgba(255, 107, 107, 0.9)); color: white; border-radius: 10px;">
+                        <h3>₹100 OFF</h3>
+                        <p>On your first order</p>
+                        <h4 id="couponCode" class="mb-3">ZOMITO100</h4>
+                        <button class="btn btn-light" onclick="copyCoupon()">
+                            <i class="fas fa-copy"></i> Copy Coupon
+                        </button>
+                    </div>
+                    <p>Your coupon has been saved to your account!</p>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Start Ordering</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zomexa AI Assistant Modal -->
+    <div class="modal fade zomexa-modal" id="zomexaModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-robot me-2"></i> Zomexa Food Assistant
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="chat-messages-container" id="chatMessages">
+                        <!-- Messages will be added here -->
+                    </div>
+                    <div class="quick-suggestions">
+                        <span class="quick-suggestion" onclick="askZomexa('pizza')">Pizza</span>
+                        <span class="quick-suggestion" onclick="askZomexa('burger')">Burger</span>
+                        <span class="quick-suggestion" onclick="askZomexa('biryani')">Biryani</span>
+                        <span class="quick-suggestion" onclick="askZomexa('veg meal')">Veg Meal</span>
+                        <span class="quick-suggestion" onclick="askZomexa('sandwich')">Sandwich</span>
+                        <span class="quick-suggestion" onclick="askZomexa('cake')">Cake</span>
+                        <span class="quick-suggestion" onclick="askZomexa('paratha')">Paratha</span>
+                        <span class="quick-suggestion" onclick="askZomexa('north indian')">North Indian</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ==================== ADVANCED USER SYSTEM (with OTP, coupons, cart) ====================
+const UserSystem = {
+    // Storage keys
+    STORAGE_KEYS: {
+        USERS: 'zomito_users',
+        CURRENT_USER: 'zomito_current_user',
+        COUPONS: 'zomito_coupons',
+        USER_CITY: 'zomito_user_city',
+        CART: 'zomito_cart'               // added for cart persistence
+    },
+
+    // Data
+    users: [],
+    currentUser: null,
+    cart: [],                              // will be synced with currentUser.cart
+
+    // Initialize
+    init() {
+        this.loadUsers();
+        this.loadCart();                    // load cart from localStorage
+        this.checkLoginStatus();
+        this.setupEventListeners();
+
+        // Load user's city preference if logged in
+        if (this.currentUser && this.currentUser.city) {
+            Zomexa.currentCity = this.currentUser.city;
+            document.getElementById('current-city').textContent = this.currentUser.city;
+        }
+    },
+
+    // Load users from localStorage
+    loadUsers() {
+        const usersData = localStorage.getItem(this.STORAGE_KEYS.USERS);
+        this.users = usersData ? JSON.parse(usersData) : [];
+
+        const currentUserData = localStorage.getItem(this.STORAGE_KEYS.CURRENT_USER);
+        this.currentUser = currentUserData ? JSON.parse(currentUserData) : null;
+    },
+
+    // Save users array
+    saveUsers() {
+        localStorage.setItem(this.STORAGE_KEYS.USERS, JSON.stringify(this.users));
+    },
+
+    // Save current user (including cart and orders)
+    saveCurrentUser() {
+        if (this.currentUser) {
+            localStorage.setItem(this.STORAGE_KEYS.CURRENT_USER, JSON.stringify(this.currentUser));
+        }
+    },
+
+    // Load cart from separate storage (or from currentUser)
+    loadCart() {
+        if (this.currentUser && this.currentUser.cart) {
+            this.cart = this.currentUser.cart;
+        } else {
+            const cartData = localStorage.getItem(this.STORAGE_KEYS.CART);
+            this.cart = cartData ? JSON.parse(cartData) : [];
+            // if user exists, attach cart to user
+            if (this.currentUser) {
+                this.currentUser.cart = this.cart;
+                this.saveCurrentUser();
+            }
+        }
+    },
+
+    // Save cart
+    saveCart() {
+        localStorage.setItem(this.STORAGE_KEYS.CART, JSON.stringify(this.cart));
+        if (this.currentUser) {
+            this.currentUser.cart = this.cart;
+            this.saveCurrentUser();
+        }
+    },
+
+    // Update UI (navbar, cart count)
+    updateUI() {
+        const userDropdown = document.getElementById('userDropdown');
+        const loginItem = document.getElementById('login-dropdown-item');
+        const signupItem = document.getElementById('signup-dropdown-item');
+        const logoutItem = document.getElementById('logout-dropdown-item');
+        const cartNavItem = document.getElementById('cartNavItem');
+        const cartCount = document.getElementById('cartCount');
+
+        if (this.currentUser) {
+            userDropdown.innerHTML = `<i class="fas fa-user-circle"></i> Hi, ${this.currentUser.firstName}`;
+            loginItem.style.display = 'none';
+            signupItem.style.display = 'none';
+            logoutItem.style.display = 'block';
+            cartNavItem.style.display = 'block';
+            cartCount.textContent = (this.currentUser.cart?.length || 0).toString();
+        } else {
+            userDropdown.innerHTML = `<i class="fas fa-user-circle"></i> Login/Sign Up`;
+            loginItem.style.display = 'block';
+            signupItem.style.display = 'block';
+            logoutItem.style.display = 'none';
+            cartNavItem.style.display = 'none';
+        }
+    },
+
+    // Check login status
+    checkLoginStatus() {
+        this.updateUI();
+    },
+
+    // Generate OTP
+    generateOTP() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+    },
+
+    // Send OTP (simulated)
+    sendOTP(email, otp) {
+        console.log(`OTP sent to ${email}: ${otp}`);
+        alert(`Zomito says:\nYour OTP for email ${email} is: ${otp}\n\n(In a real app, this would be sent to your email)`);
+        return otp;
+    },
+
+    // Sign up (first step: store temp user with OTP)
+    signUp(userData) {
+        // Check if user already exists
+        const existingUser = this.users.find(user => user.email === userData.email);
+        if (existingUser) {
+            return { success: false, message: 'Email already registered' };
+        }
+
+        const otp = this.generateOTP();
+        userData.otp = otp;
+        userData.verified = false;
+        userData.createdAt = new Date().toISOString();
+        userData.cart = [];               // initialise cart
+        userData.orders = [];              // initialise orders
+        userData.hasOrdered = false;        // for first‑order discount
+
+        sessionStorage.setItem('temp_user', JSON.stringify(userData));
+        this.sendOTP(userData.email, otp);
+        return { success: true, otp };
+    },
+
+    // Verify OTP and complete signup
+    verifyOTPAndSignup(enteredOtp) {
+        const tempUser = JSON.parse(sessionStorage.getItem('temp_user'));
+        if (!tempUser) {
+            return { success: false, message: 'Session expired. Please sign up again.' };
+        }
+        if (tempUser.otp !== enteredOtp) {
+            return { success: false, message: 'Invalid OTP' };
+        }
+
+        delete tempUser.otp;
+        tempUser.verified = true;
+
+        // Generate coupon
+        const coupon = this.generateCoupon(tempUser.email);
+        tempUser.coupons = [coupon];
+
+        this.users.push(tempUser);
+        this.saveUsers();
+
+        sessionStorage.removeItem('temp_user');
+
+        // Set as current user
+        this.currentUser = tempUser;
+        this.saveCurrentUser();
+
+        // Save city preference
+        localStorage.setItem(this.STORAGE_KEYS.USER_CITY, tempUser.city);
+        Zomexa.currentCity = tempUser.city;
+        document.getElementById('current-city').textContent = tempUser.city;
+
+        this.updateUI();
+        return { success: true, user: tempUser, coupon };
+    },
+
+    // Generate coupon
+    generateCoupon(email) {
+        const couponCode = 'ZOMITO' + Math.floor(100 + Math.random() * 900);
+        const coupon = {
+            code: couponCode,
+            amount: 100,
+            valid: true,
+            createdAt: new Date().toISOString(),
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        };
+        let coupons = JSON.parse(localStorage.getItem(this.STORAGE_KEYS.COUPONS) || '{}');
+        coupons[email] = coupons[email] || [];
+        coupons[email].push(coupon);
+        localStorage.setItem(this.STORAGE_KEYS.COUPONS, JSON.stringify(coupons));
+        return coupon;
+    },
+
+    // Login
+    login(email, password) {
+        const user = this.users.find(u => u.email === email && u.verified);
+        if (!user) {
+            return { success: false, message: 'User not found or not verified' };
+        }
+        if (user.password !== password) {
+            return { success: false, message: 'Invalid password' };
+        }
+
+        this.currentUser = user;
+        this.saveCurrentUser();
+        localStorage.setItem(this.STORAGE_KEYS.USER_CITY, user.city);
+        Zomexa.currentCity = user.city;
+        document.getElementById('current-city').textContent = user.city;
+
+        this.updateUI();
+        return { success: true, user };
+    },
+
+    // Logout
+    logout() {
+        this.currentUser = null;
+        localStorage.removeItem(this.STORAGE_KEYS.CURRENT_USER);
+        this.cart = [];
+        this.saveCart();
+        this.updateUI();
+
+        // Reset city to default (Ahmedabad)
+        Zomexa.currentCity = 'Ahmedabad';
+        document.getElementById('current-city').textContent = 'Ahmedabad';
+
+        this.showNotification('Logged out successfully', 'success');
+        // Optionally reload to reset state
+        setTimeout(() => location.reload(), 1500);
+    },
+
+    // Add to cart
+    addToCart(item) {
+        if (!this.currentUser) {
+            const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+            return false;
+        }
+
+        const cartItem = {
+            ...item,
+            id: Date.now(),
+            addedAt: new Date().toISOString(),
+            discountApplied: !this.currentUser.hasOrdered
+        };
+
+        if (!this.currentUser.cart) this.currentUser.cart = [];
+        this.currentUser.cart.push(cartItem);
+        this.saveCurrentUser();
+        this.updateUI();
+
+        this.showCartNotification(`${item.name} added to cart!`);
+        return true;
+    },
+
+    // Show cart notification
+    showCartNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'cart-notification';
+        notification.innerHTML = `
+            <div class="cart-notification-content">
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.classList.add('show'), 100);
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    },
+
+    // General notification
+    showNotification(message, type) {
+        const existing = document.querySelector('.custom-notification');
+        if (existing) existing.remove();
+
+        const notification = document.createElement('div');
+        notification.className = `custom-notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.classList.add('show'), 100);
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    },
+
+    // Setup event listeners (signup, login, OTP, forgot password)
+    setupEventListeners() {
+        // Signup form
+        document.getElementById('signupForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userData = {
+                firstName: document.getElementById('firstName').value.trim(),
+                lastName: document.getElementById('lastName').value.trim(),
+                city: document.getElementById('signupCity').value,
+                address: document.getElementById('signupAddress').value.trim(),
+                email: document.getElementById('signupEmail').value.trim(),
+                phone: document.getElementById('signupPhone').value.trim(),
+                password: document.getElementById('signupPassword').value
+            };
+            const result = this.signUp(userData);
+            if (result.success) {
+                const signupModal = bootstrap.Modal.getInstance(document.getElementById('signupModal'));
+                signupModal.hide();
+                const otpModal = new bootstrap.Modal(document.getElementById('otpModal'));
+                otpModal.show();
+                document.getElementById('signupForm').reset();
+            } else {
+                alert(result.message);
+            }
+        });
+
+        // Verify OTP
+        document.getElementById('verifyOtpBtn')?.addEventListener('click', () => {
+            const otp = document.getElementById('otpInput').value.trim();
+            if (otp.length !== 6) {
+                alert('Please enter a valid 6-digit OTP');
+                return;
+            }
+            const result = this.verifyOTPAndSignup(otp);
+            if (result.success) {
+                const otpModal = bootstrap.Modal.getInstance(document.getElementById('otpModal'));
+                otpModal.hide();
+                setTimeout(() => {
+                    const couponModal = new bootstrap.Modal(document.getElementById('couponModal'));
+                    couponModal.show();
+                    document.getElementById('couponCode').textContent = result.coupon.code;
+                }, 500);
+            } else {
+                alert(result.message);
+            }
+        });
+
+        // Resend OTP
+        document.getElementById('resendOtpBtn')?.addEventListener('click', () => {
+            const tempUser = JSON.parse(sessionStorage.getItem('temp_user'));
+            if (tempUser) {
+                const newOtp = this.generateOTP();
+                tempUser.otp = newOtp;
+                sessionStorage.setItem('temp_user', JSON.stringify(tempUser));
+                this.sendOTP(tempUser.email, newOtp);
+                alert('New OTP sent!');
+            }
+        });
+
+        // Login form
+        document.getElementById('loginForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const result = this.login(email, password);
+            if (result.success) {
+                const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                loginModal.hide();
+                document.getElementById('loginForm').reset();
+                setTimeout(() => {
+                    alert(`Welcome back, ${result.user.firstName}!`);
+                }, 500);
+            } else {
+                alert(result.message);
+            }
+        });
+
+        // Forgot password - send OTP
+        document.getElementById('sendResetOtpBtn')?.addEventListener('click', () => {
+            const email = document.getElementById('resetEmail').value.trim();
+            const user = this.users.find(u => u.email === email && u.verified);
+            if (!user) {
+                alert('Email not found or not verified');
+                return;
+            }
+            const otp = this.generateOTP();
+            sessionStorage.setItem('reset_otp', otp);
+            sessionStorage.setItem('reset_email', email);
+            this.sendOTP(email, otp);
+            document.getElementById('forgotPasswordStep1').style.display = 'none';
+            document.getElementById('forgotPasswordStep2').style.display = 'block';
+        });
+
+        // Forgot password - reset
+        document.getElementById('resetPasswordBtn')?.addEventListener('click', () => {
+            const otp = document.getElementById('resetOtp').value.trim();
+            const newPassword = document.getElementById('newPassword').value;
+            const storedOtp = sessionStorage.getItem('reset_otp');
+            const email = sessionStorage.getItem('reset_email');
+
+            if (otp !== storedOtp) {
+                alert('Invalid OTP');
+                return;
+            }
+            if (newPassword.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+
+            const userIndex = this.users.findIndex(u => u.email === email);
+            if (userIndex !== -1) {
+                this.users[userIndex].password = newPassword;
+                this.saveUsers();
+                sessionStorage.removeItem('reset_otp');
+                sessionStorage.removeItem('reset_email');
+                const forgotModal = bootstrap.Modal.getInstance(document.getElementById('forgotPasswordModal'));
+                forgotModal.hide();
+                alert('Password reset successfully! Please login with your new password.');
+            }
+        });
+    }
+};
+
+        // Zomexa Food Assistant
+        const Zomexa = {
+            currentCuisine: null,
+            currentCity: "Ahmedabad",
+            
+            // City-based restaurant data
+            cityRestaurants: {
+                "Ahmedabad": {
+                    "pizza": [
+                        { 
+                            id:1,
+                            name: "London Yard Pizza", 
+                            rating: 4.3, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹350-₹600", 
+                            address: "C",
+                            offers: ["20% OFF | Use LONDON20", "Buy 1 Get 1 Free"],
+                            cuisine: "Pizza, Italian"
+                        },
+                        { 
+                            id:2,
+                            name: "Domino's Pizza", 
+                            rating: 4.9, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹400-₹700", 
+                            address: "Satellite, Ahmedabad",
+                            offers: ["Flat ₹150 OFF", "Free Garlic Bread"],
+                            cuisine: "Pizza, Sides"
+                        },
+                        { 
+                            id:3,
+                            name: "Pizza Hut", 
+                            rating: 4.1, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹500-₹800", 
+                            address: "Vastrapur, Ahmedabad",
+                            offers: ["40% OFF", "Free Pepsi"],
+                            cuisine: "Pizza, Italian"
+                        }
+                    ],
+                    "burger": [
+                        { 
+                            id:4,
+                            name: "McDonald's", 
+                            rating: 4.2, 
+                            deliveryTime: "15-20 min", 
+                            price: "₹200-₹400", 
+                            address: "SG Highway, Ahmedabad",
+                            offers: ["₹100 OFF", "Free Fries"],
+                            cuisine: "Burgers, Fast Food"
+                        },
+                        { 
+                            id:5,
+                            name: "Burger King", 
+                            rating: 4.3, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹250-₹450", 
+                            address: "Prahlad Nagar, Ahmedabad",
+                            offers: ["Buy 1 Get 1", "20% OFF"],
+                            cuisine: "Burgers, American"
+                        },
+                        { 
+                            id:6,
+                            name: "Burger Singh", 
+                            rating: 4.0, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹300-₹500", 
+                            address: "Navrangpura, Ahmedabad",
+                            offers: ["Combo Offers", "Free Dessert"],
+                            cuisine: "Burgers, Indian"
+                        }
+                    ],
+                    "biryani": [
+                        { 
+                            id:7,
+                            name: "Biryani Blues", 
+                            rating: 4.4, 
+                            deliveryTime: "35-40 min", 
+                            price: "₹350-₹600", 
+                            address: "Gurukul Road, Ahmedabad",
+                            offers: ["₹75 OFF", "Extra Raita"],
+                            cuisine: "Biryani, North Indian"
+                        },
+                        { 
+                            id:8,
+                            name: "Paradise Biryani", 
+                            rating: 4.3, 
+                            deliveryTime: "40-45 min", 
+                            price: "₹400-₹700", 
+                            address: "Maninagar, Ahmedabad",
+                            offers: ["10% OFF", "Free Salan"],
+                            cuisine: "Biryani, Hyderabadi"
+                        },
+                        { 
+                            id:9,
+                            name: "Behrouz Biryani", 
+                            rating: 4.5, 
+                            deliveryTime: "45-50 min", 
+                            price: "₹500-₹900", 
+                            address: "Bodakdev, Ahmedabad",
+                            offers: ["Premium Combo", "Free Dessert"],
+                            cuisine: "Biryani, Awadhi"
+                        }
+                    ],
+                    "veg meal": [
+                        { 
+                            id:10,
+                            name: "Mahalaxmi Bhaji Pav", 
+                            rating: 4.2, 
+                            deliveryTime: "19 min", 
+                            price: "₹150-₹300", 
+                            address: "Various Locations, Ahmedabad",
+                            offers: ["₹50 OFF", "Thali Special"],
+                            cuisine: "Gujarati, Thali"
+                        },
+                        { 
+                            id:11,
+                            name: "Gwalia Sweets", 
+                            rating: 4.3, 
+                            deliveryTime: "15 min", 
+                            price: "₹200-₹400", 
+                            address: "Law Garden, Ahmedabad",
+                            offers: ["10% OFF", "Sweet Combo"],
+                            cuisine: "North Indian, Sweets"
+                        },
+                        { 
+                            id:12,
+                            name: "Haldiram's", 
+                            rating: 4.3, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹300-₹600", 
+                            address: "Navrangpura, Ahmedabad",
+                            offers: ["Thali Discount", "Free Papad"],
+                            cuisine: "North Indian, Sweets"
+                        }
+                    ],
+                    "sandwich": [
+                        { 
+                            id:13,
+                            name: "Subway", 
+                            rating: 4.0, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹200-₹350", 
+                            address: "Navrangpura, Ahmedabad",
+                            offers: ["Combo Deal", "Free Cookie"],
+                            cuisine: "Sandwiches, Healthy"
+                        },
+                        { 
+                            id:14,
+                            name: "HL Sandwiches", 
+                            rating: 4.1, 
+                            deliveryTime: "15 min", 
+                            price: "₹120-₹250", 
+                            address: "CG Road, Ahmedabad",
+                            offers: ["Buy 2 Get 1 Free", "Extra Chutney"],
+                            cuisine: "Sandwich, Street Food"
+                        },
+                        { 
+                            id:15,
+                            name: "Sandwich Express", 
+                            rating: 4.0, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹180-₹320", 
+                            address: "Satellite, Ahmedabad",
+                            offers: ["20% OFF", "Free Drink"],
+                            cuisine: "Sandwiches, Fast Food"
+                        }
+                    ],
+                    "cake": [
+                        { 
+                            id:16,
+                            name: "Theobroma", 
+                            rating: 4.5, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹250-₹600", 
+                            address: "Bodakdev, Ahmedabad",
+                            offers: ["20% OFF", "Free Brownie"],
+                            cuisine: "Cakes, Desserts"
+                        },
+                        { 
+                            id:17,
+                            name: "CakeZone", 
+                            rating: 4.2, 
+                            deliveryTime: "40-45 min", 
+                            price: "₹300-₹800", 
+                            address: "Prahlad Nagar, Ahmedabad",
+                            offers: ["Birthday Special", "Free Candles"],
+                            cuisine: "Cakes, Pastries"
+                        },
+                        { 
+                            id:18,
+                            name: "Sweet Truth", 
+                            rating: 4.3, 
+                            deliveryTime: "35-40 min", 
+                            price: "₹350-₹700", 
+                            address: "SG Highway, Ahmedabad",
+                            offers: ["Custom Cake Discount", "Free Delivery"],
+                            cuisine: "Cakes, Desserts"
+                        }
+                    ],
+                    "paratha": [
+                        { 
+                            id:19,
+                            name: "Paratha Plaza", 
+                            rating: 4.2, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹200-₹400", 
+                            address: "Memnagar, Ahmedabad",
+                            offers: ["Combo Meal", "Free Curd"],
+                            cuisine: "Paratha, North Indian"
+                        },
+                        { 
+                            id:20,
+                            name: "Moti Mahal", 
+                            rating: 4.1, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹250-₹450", 
+                            address: "Maninagar, Ahmedabad",
+                            offers: ["Family Pack", "Extra Pickle"],
+                            cuisine: "North Indian, Paratha"
+                        },
+                        { 
+                            id:21,
+                            name: "Gopal Paratha", 
+                            rating: 4.0, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹150-₹300", 
+                            address: "Law Garden, Ahmedabad",
+                            offers: ["Buy 3 Get 1 Free", "Butter Special"],
+                            cuisine: "Paratha, Street Food"
+                        }
+                    ],
+                    "north indian": [
+                        { 
+                            id:22,
+                            name: "Haldiram's", 
+                            rating: 4.3, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹350-₹700", 
+                            address: "Navrangpura, Ahmedabad",
+                            offers: ["Thali Special", "Free Papad"],
+                            cuisine: "North Indian, Sweets"
+                        },
+                        { 
+                            id:23,
+                            name: "Bikanervala", 
+                            rating: 4.2, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹300-₹650", 
+                            address: "SG Highway, Ahmedabad",
+                            offers: ["Rajasthani Thali", "10% OFF"],
+                            cuisine: "North Indian, Rajasthani"
+                        },
+                        { 
+                            id:24,
+                            name: "Sattvik", 
+                            rating: 4.4, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹400-₹800", 
+                            address: "Vastrapur, Ahmedabad",
+                            offers: ["Pure Veg Special", "Free Sweet"],
+                            cuisine: "North Indian, Gujarati"
+                        }
+                    ]
+                },
+                "Delhi": {
+                    "pizza": [
+                        { 
+                            id:25,
+                            name: "Leo’s Artisan Pizza", 
+                            rating: 4.3, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹350-₹600", 
+                            address: "Vasant Vihar,Delhi",
+                            offers: ["20% OFF | Use LONDON20", "Buy 1 Get 1 Free"],
+                            cuisine: "Pizza, Italian"
+                        },
+                        { 
+                            id:26,
+                            name: "La Piazza", 
+                            rating: 4.9, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹1400-₹1700", 
+                            address: "Hyatt Regency, Bhikaji Cama Place",
+                            offers: ["Flat ₹150 OFF", "Free Garlic Bread"],
+                            cuisine: "Pizza, Sides"
+                        },
+                        { 
+                            id:27,
+                            name: "Sorrento", 
+                            rating: 4.3, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹500-₹800", 
+                            address: "Connaught Place,Delhi",
+                            offers: ["40% OFF", "Free Pepsi"],
+                            cuisine: "Pizza, Italian"
+                        }
+                    ],
+                    "burger": [
+                        { 
+                            id:28,
+                            name: "WanderBurgs", 
+                            rating: 4.6, 
+                            deliveryTime: "15-20 min", 
+                            price: "₹200-₹400", 
+                            address: "Greater Kailash,Delhi",
+                            offers: ["₹100 OFF", "Free Fries"],
+                            cuisine: "Burgers, Fast Food"
+                        },
+                        { 
+                            id:29,
+                            name: "Offsite Burgers", 
+                            rating: 4.3, 
+                            deliveryTime: "15-25 min", 
+                            price: "₹250-₹450", 
+                            address: "Prahlad Nagar, Ahmedabad",
+                            offers: ["Buy 1 Get 1", "20% OFF"],
+                            cuisine: "Burgers, American"
+                        },
+                        { 
+                            id:30,
+                            name: "Burger Singh", 
+                            rating: 4.6, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹300-₹500", 
+                            address: "Civil Lines,Delhi",
+                            offers: ["Combo Offers", "Free Dessert"],
+                            cuisine: "Burgers, Indian"
+                        }
+                    ],
+                    "biryani": [
+                        { 
+                            id:31,
+                            name: "Biryani Blooms", 
+                            rating: 4.4, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹350-₹800", 
+                            address: "Gali Kababian,Delhi",
+                            offers: ["₹75 OFF", "Extra Raita"],
+                            cuisine: "Biryani, North Indian"
+                        },
+                        { 
+                            id:32,
+                            name: "Saffron Biryan", 
+                            rating: 4.3, 
+                            deliveryTime: "40-45 min", 
+                            price: "₹400-₹700", 
+                            address: "Maninagar, Ahmedabad",
+                            offers: ["10% OFF", "Free Salan"],
+                            cuisine: "Biryani, Hyderabadi"
+                        },
+                        { 
+                            id:33,
+                            name: "Biryani Times", 
+                            rating: 4.5, 
+                            deliveryTime: "45-50 min", 
+                            price: "₹500-₹700", 
+                            address: "East of Kailash,Jaipur",
+                            offers: ["Premium Combo", "Free Dessert"],
+                            cuisine: "Biryani, Awadhi"
+                        }
+                    ],
+                    "veg meal": [
+                        { 
+                            id:34,
+                            name: "Pure Shudh", 
+                            rating: 4.2, 
+                            deliveryTime: "19 min", 
+                            price: "₹150-₹300", 
+                            address: "Kirti Nagar,Delhi",
+                            offers: ["₹50 OFF", "Thali Special"],
+                            cuisine: "Veg-meal, Thali"
+                        },
+                        { 
+                            id:35,
+                            name: "Suruchi Restaurant", 
+                            rating: 4.3, 
+                            deliveryTime: "15 min", 
+                            price: "₹200-₹400", 
+                            address: "Karol Bagh,Delhi",
+                            offers: ["10% OFF", "Sweet Combo"],
+                            cuisine: "Gujarati, Thali"
+                        },
+                        { 
+                            id:36,
+                            name: "Ghoomar Traditional Thali Restaurants", 
+                            rating: 4.7, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹300-₹600", 
+                            address: "Chandni Chowk,Delhi",
+                            offers: ["Thali Discount", "Free Papad"],
+                            cuisine: "North Indian, Sweets"
+                        }
+                    ],
+                    "sandwich": [
+                        { 
+                            id:37,
+                            name: "Pete's Deli", 
+                            rating: 4.7, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹200-₹350", 
+                            address: "Geeta Colony,Delhi",
+                            offers: ["Combo Deal", "Free Cookie"],
+                            cuisine: "Sandwiches, Fast Food"
+                        },
+                        { 
+                            id:38,
+                            name: "Savage Sandwich Shop", 
+                            rating: 4.1, 
+                            deliveryTime: "15 min", 
+                            price: "₹220-₹250", 
+                            address: "Hauz Khas Market,Delhi",
+                            offers: ["Buy 2 Get 1 Free", "Extra Chutney"],
+                            cuisine: "Sandwich, Street Food"
+                        },
+                        { 
+                            id:39,
+                            name: "Sandwich Smugglers", 
+                            rating: 4.0, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹280-₹320", 
+                            address: "Sheikh Sarai,Delhi",
+                            offers: ["20% OFF", "Free Drink"],
+                            cuisine: "Sandwiches,Healthy"
+                        }
+                    ],
+                    "cake": [
+                        { 
+                            id:40,
+                            name: "Theobroma", 
+                            rating: 4.5, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹250-₹600", 
+                            address: "Malviya Nagar, Delhi",
+                            offers: ["20% OFF", "Free Brownie"],
+                            cuisine: "Cakes, Desserts"
+                        },
+                        { 
+                            id:41,
+                            name: "The Big Chill Cakery", 
+                            rating: 4.2, 
+                            deliveryTime: "40-45 min", 
+                            price: "₹300-₹800", 
+                            address: "Khan Market,Delhi",
+                            offers: ["Birthday Special", "Free Candles"],
+                            cuisine: "Cakes, Pastries"
+                        },
+                        { 
+                            id:42,
+                            name: "Wenger's", 
+                            rating: 4.3, 
+                            deliveryTime: "35-40 min", 
+                            price: "₹350-₹600", 
+                            address: "Connaught Place,Delhi",
+                            offers: ["Custom Cake Discount", "Free Delivery"],
+                            cuisine: "Cakes, Desserts"
+                        }
+                    ],
+                    "paratha": [
+                        { 
+                            id:43,
+                            name: "R. Paratha Point", 
+                            rating: 4.7, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹200-₹400", 
+                            address: "Greater Kailash,Delhi",
+                            offers: ["Combo Meal", "Free Curd"],
+                            cuisine: "Paratha, North Indian"
+                        },
+                        { 
+                            id:44,
+                            name: "Moolchand Paratha", 
+                            rating: 4.2, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹250-₹450", 
+                            address: "Lajpat Nagar,Delhi",
+                            offers: ["Family Pack", "Extra Pickle"],
+                            cuisine: "North Indian, Paratha"
+                        },
+                        { 
+                            id:45,
+                            name: "Parathe Wali Gali", 
+                            rating: 4.0, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹150-₹300", 
+                            address: "Chandni Chowk",
+                            offers: ["Buy 3 Get 1 Free", "Butter Special"],
+                            cuisine: "Paratha, Street Food"
+                        }
+                    ],
+                    "north indian": [
+                        { 
+                            id:46,
+                            name: "Have More", 
+                            rating: 4.3, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹1350-₹1700", 
+                            address: "Pandara Road,Delhi",
+                            offers: ["Thali Special", "Free Papad"],
+                            cuisine: "North Indian, Sweets"
+                        },
+                        { 
+                            id:47,
+                            name: "Dum Pukht", 
+                            rating: 4.5, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹300-₹650", 
+                            address: "Chanakyapuri,Delhi",
+                            offers: ["Thali", "10% OFF"],
+                            cuisine: "North Indian"
+                        },
+                        { 
+                            id:48,
+                            name: "Indian Accent", 
+                            rating: 4.6, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹400-₹800", 
+                            address: "Lodhi Road,Delhi",
+                            offers: ["Pure Veg Special", "Free Sweet"],
+                            cuisine: "North Indian"
+                        }
+                    ]
+                },
+                "Mumbai": {
+                    "pizza": [
+                        { 
+                            id:49,
+                            name: "Pizza By The Bay", 
+                            rating: 4.2, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹350-₹600", 
+                            address: "Marine Drive, Churchgate",
+                            offers: ["20% OFF | Use LONDON20", "Buy 1 Get 1 Free"],
+                            cuisine: "Pizza, Italian"
+                        },
+                        { 
+                            id:50,
+                            name: "Joey’s Pizza", 
+                            rating: 4.4, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹400-₹700", 
+                            address: "Andheri West, Mumbai",
+                            offers: ["Flat ₹150 OFF", "Free Garlic Bread"],
+                            cuisine: "Pizza, Sides"
+                        },
+                        { 
+                            id:51,
+                            name: "1441 Pizzeria Kala Ghoda", 
+                            rating: 4.3, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹500-₹800", 
+                            address: "Kala Ghoda, Fort area",
+                            offers: ["40% OFF", "Free Pepsi"],
+                            cuisine: "Pizza, Italian"
+                        }
+                    ],
+                    "burger": [
+                        { 
+                            id:52,
+                            name: "Jimi’s Burger", 
+                            rating: 4.6, 
+                            deliveryTime: "15-20 min", 
+                            price: "₹200-₹400", 
+                            address: "Bandra, Mumbai",
+                            offers: ["₹100 OFF", "Free Fries"],
+                            cuisine: "Burgers, Fast Food"
+                        },
+                        { 
+                            id:53,
+                            name: "The Good Flippin’ Burgers", 
+                            rating: 4.3, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹250-₹400", 
+                            address: "Marine Lines, Mumbai",
+                            offers: ["Buy 1 Get 1", "20% OFF"],
+                            cuisine: "Burgers, American"
+                        },
+                        { 
+                            id:54,
+                            name: "NYC Burger Co", 
+                            rating: 4.6, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹300-₹500", 
+                            address: "Powai, Mumbai",
+                            offers: ["Combo Offers", "Free Dessert"],
+                            cuisine: "Burgers, Indian"
+                        }
+                    ],
+                    "biryani": [
+                        { 
+                            id:55,
+                            name: "Persian Darbar", 
+                            rating: 4.5, 
+                            deliveryTime: "40-45 min", 
+                            price: "₹400-₹800", 
+                            address: "Byculla, Mumbai",
+                            offers: ["₹75 OFF", "Extra Raita"],
+                            cuisine: "Biryani, North Indian"
+                        },
+                        { 
+                            id:56,
+                            name: "Biryani By Kilo", 
+                            rating: 4.3, 
+                            deliveryTime: "40-45 min", 
+                            price: "₹400-₹700", 
+                            address: "Bandra west,Mumbai",
+                            offers: ["10% OFF", "Free Salan"],
+                            cuisine: "Biryani, Hyderabadi"
+                        },
+                        { 
+                            id:57,
+                            name: "Behrouz Biryani", 
+                            rating: 4.5, 
+                            deliveryTime: "45-50 min", 
+                            price: "₹500-₹900", 
+                            address: "Marine Lines, Mumbai",
+                            offers: ["Premium Combo", "Free Dessert"],
+                            cuisine: "Biryani, Awadhi"
+                        }
+                    ],
+                    "veg meal": [
+                        { 
+                            id:58,
+                            name: "Shree Thaker Bhojanalay", 
+                            rating: 4.2, 
+                            deliveryTime: "20-25  min", 
+                            price: "₹200-₹350", 
+                            address: "Marine Lines, Mumbai",
+                            offers: ["₹50 OFF", "Thali Special"],
+                            cuisine: "Gujarati, Thali"
+                        },
+                        { 
+                            id:59,
+                            name: "Maharaja Bhog", 
+                            rating: 4.2, 
+                            deliveryTime: "15 min", 
+                            price: "₹200-₹400", 
+                            address: "Juhu, Mumbai",
+                            offers: ["10% OFF", "Sweet Combo"],
+                            cuisine: "Gujarati, Thali"
+                        },
+                        { 
+                            id:60,
+                            name: "Status Restaurant", 
+                            rating: 4.2, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹300-₹600", 
+                            address: "Nariman Point,Mumbai", 
+                             offers: ["Thali Discount", "Free Papad"],
+                            cuisine: "GUjarati, Sweets"
+                        }
+                    ],
+                    "sandwich": [
+                        { 
+                            id:61,
+                            name: "Pinto Sando", 
+                            rating: 4.7, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹200-₹350", 
+                            address: "Malad West,Mumbai",
+                            offers: ["Combo Deal", "Free Cookie"],
+                            cuisine: "Sandwiches, Healthy"
+                        },
+                        { 
+                            id:62,
+                            name: "Sandwizzaa Santacruz West", 
+                            rating: 4.1, 
+                            deliveryTime: "15 min", 
+                            price: "₹120-₹250", 
+                            address: "Santacruz West,Mumbai",
+                            offers: ["Buy 2 Get 1 Free", "Extra Chutney"],
+                            cuisine: "Sandwiches, Healthy"
+                        },
+                        { 
+                            id:63,
+                            name: "Sloppy Bros", 
+                            rating: 4.0, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹180-₹320", 
+                            address: "Santacruz West,Mumbai",
+                            offers: ["20% OFF", "Free Drink"],
+                            cuisine: "Sandwiches, Fast Food"
+                        }
+                    ],
+                    "cake": [
+                        { 
+                            id:64,
+                            name: "Theobroma", 
+                            rating: 4.5, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹250-₹600", 
+                            address: "Colaba, Mumbai",
+                            offers: ["20% OFF", "Free Brownie"],
+                            cuisine: "Cakes, Desserts"
+                        },
+                        { 
+                            id:65,
+                            name: "Deliciae by Bunty Mahajan", 
+                            rating: 4.2, 
+                            deliveryTime: "40-45 min", 
+                            price: "₹300-₹800", 
+                            address: "Bandra West, Mumbai",
+                            offers: ["Birthday Special", "Free Candles"],
+                            cuisine: "Cakes, Pastries"
+                        },
+                        
+                        { 
+                            id:66,
+                            name: "Bombay Baking Company", 
+                            rating: 4.3, 
+                            deliveryTime: "35-40 min", 
+                            price: "₹350-₹700", 
+                            address: "JW Marriott-Juhu, Mumbai",
+                            offers: ["Custom Cake Discount", "Free Delivery"],
+                            cuisine: "Cakes, Desserts"
+                        }
+                    ],
+                    "paratha": [
+                        { 
+                            id:67,
+                            name: "Only Parathas", 
+                            rating: 4.2, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹200-₹400", 
+                            address: "Khar West, Mumbai",
+                            offers: ["Combo Meal", "Free Curd"],
+                            cuisine: "Paratha, North Indian"
+                        },
+                        { 
+                            id:68,
+                            name: "Khaasiyat The Paratha House", 
+                            rating: 4.2, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹250-₹450", 
+                            address: "Vile Parle West, Mumbai",
+                            offers: ["Family Pack", "Extra Pickle"],
+                            cuisine: "North Indian, Paratha"
+                        },
+                        { 
+                            id:69,
+                            name: "Baba Seekh Paratha", 
+                            rating: 4.0, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹150-₹300", 
+                            address: "Kurla West, Mumbai",
+                            offers: ["Buy 3 Get 1 Free", "Butter Special"],
+                            cuisine: "Paratha, Street Food"
+                        }
+                    ],
+                    "north indian": [
+                        { 
+                            id:70,
+                            name: "Jamavar - Indian Speciality Restaurant", 
+                            rating: 4.3, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹350-₹700", 
+                            address: "Andheri East, Mumbai",
+                            offers: ["Thali Special", "Free Papad"],
+                            cuisine: "North Indian, Sweets"
+                        },
+                        { 
+                            id:71,
+                            name: "Masala Library by Jiggs Kalra", 
+                            rating: 4.2, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹300-₹650", 
+                            address: "BKC, Mumbai",
+                            offers: ["Rajasthani Thali", "10% OFF"],
+                            cuisine: "North Indian, Rajasthani"
+                        },
+                        { 
+                            id:72,
+                            name: "Nawab Saheb", 
+                            rating: 4.4, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹400-₹800", 
+                            address: "BKC, Mumbai",
+                            offers: ["Pure Veg Special", "Free Sweet"],
+                            cuisine: "North Indian"
+                        }
+                    ]
+                },
+                "Jaipur": {
+                    "pizza": [
+                        { 
+                            id:73,
+                            name: "Zolocrust", 
+                            rating: 4.3, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹350-₹600", 
+                            address: "Durgapura,Jaipur",
+                            offers: ["20% OFF | Use LONDON20", "Buy 1 Get 1 Free"],
+                            cuisine: "Pizza, Italian"
+                        },
+                        { 
+                            id:74,
+                            name: "Pizzazz", 
+                            rating: 4.2, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹400-₹700", 
+                            address: "Tonk Road, Jaipur",
+                            offers: ["Flat ₹150 OFF", "Free Garlic Bread"],
+                            cuisine: "Pizza, Sides"
+                        },
+                        { 
+                            id:75,
+                            name: "Downtown Pizza", 
+                            rating: 4.3, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹500-₹800", 
+                            address: "Vidyadhar Nagar,Jaipur",
+                            offers: ["40% OFF", "Free Pepsi"],
+                            cuisine: "Pizza, Italian"
+                        }
+                    ],
+                    "burger": [
+                        { 
+                            id:76,
+                            name: "Q's Burgerz", 
+                            rating: 4.6, 
+                            deliveryTime: "15-20 min", 
+                            price: "₹200-₹400", 
+                            address: "Jaipur Road area",
+                            offers: ["₹100 OFF", "Free Fries"],
+                            cuisine: "Burgers, Fast Food"
+                        },
+                        { 
+                            id:77,
+                            name: "Burger King", 
+                            rating: 4.3, 
+                            deliveryTime: "15-25 min", 
+                            price: "₹250-₹450", 
+                            address: "Adarsh Nagar,Jaipur",
+                            offers: ["Buy 1 Get 1", "20% OFF"],
+                            cuisine: "Burgers, American"
+                        },
+                        { 
+                            id:78,
+                            name: "Books & Burgers", 
+                            rating: 4.9, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹300-₹500", 
+                            address: "Vaishali Nagar,Jaipur",
+                            offers: ["Combo Offers", "Free Dessert"],
+                            cuisine: "Burgers, Indian"
+                        }
+                    ],
+                    "biryani": [
+                        { 
+                            id:79,
+                            name: "Kulhad Biryanii", 
+                            rating: 4.4, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹350-₹600", 
+                            address: "Vaishali Nagar",
+                            offers: ["₹75 OFF", "Extra Raita"],
+                            cuisine: "Biryani, North Indian"
+                        },
+                        { 
+                            id:80,
+                            name: "The Mughal Table", 
+                            rating: 4.3, 
+                            deliveryTime: "40-45 min", 
+                            price: "₹400-₹700", 
+                            address: "Maninagar, Ahmedabad",
+                            offers: ["10% OFF", "Free Salan"],
+                            cuisine: "Biryani, Mughlai"
+                        },
+                        { 
+                            id:81,
+                            name: "Biryani Basket", 
+                            rating: 4.5, 
+                            deliveryTime: "45-50 min", 
+                            price: "₹500-₹700", 
+                            address: "Vaishali Nagar.,Jaipur",
+                            offers: ["Premium Combo", "Free Dessert"],
+                            cuisine: "Biryani, Awadhi"
+                        }
+                    ],
+                    "veg meal": [
+                        { 
+                            id:82,
+                            name: "Flavors", 
+                            rating: 4.7, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹300-₹600", 
+                            address: "Vaishali Nagar, Jaipur",
+                            offers: ["Thali Discount", "Free Papad"],
+                            cuisine: "Veg-meal, Thali"
+                        },
+                        { 
+                            id:83,
+                            name: "Govindam Retreat", 
+                            rating: 4.3, 
+                            deliveryTime: "15 min", 
+                            price: "₹200-₹400", 
+                            address: "Govind Dev Ji Temple,Jaipur",
+                            offers: ["10% OFF", "Sweet Combo"],
+                            cuisine: "Gujarati, Thali"
+                        },
+                        { 
+                            
+                             id:84,
+                            name: "Thali and more", 
+                            rating: 4.2, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹300-₹600", 
+                            address: "Vaishali Nagar,Jaipur",
+                            offers: ["₹50 OFF", "Thali Special"],
+                            cuisine: "Rajasthani, Sweets"
+                        }
+                    ],
+                    "sandwich": [
+                        { 
+                            
+                            id:85,
+                            name: "Sandwich Express", 
+                            rating: 4.0, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹180-₹320", 
+                            address: "Satellite, Ahmedabad",
+                            offers: ["20% OFF", "Free Drink"],
+                            cuisine: "Sandwiches, Fast Food"
+                        },
+                        { 
+                            id:86,
+                            name: "Wichies - Grilled Paninis and Sandwiches", 
+                            rating: 4.1, 
+                            deliveryTime: "15 min", 
+                            price: "₹120-₹250", 
+                            address: "Jagatpura,Jaipur",
+                            offers: ["Buy 2 Get 1 Free", "Extra Chutney"],
+                            cuisine: "Sandwich, Street Food"
+                        },
+                        { 
+                            id:87,
+                            name: "Sandozz", 
+                            rating: 4.7, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹200-₹350", 
+                            address: "Bani Park,Jaipur",
+                            offers: ["Combo Deal", "Free Cookie"],
+                            cuisine: "Sandwiches, Healthy"
+                        }
+                    ],
+                    "cake": [
+                        { 
+                            id:88,
+                            name: "Theobroma", 
+                            rating: 4.5, 
+                            deliveryTime: "35-40 min", 
+                            price: "₹250-₹600", 
+                            address: "Vaishali Nagar, Jaipur",
+                            offers: ["20% OFF", "Free Brownie"],
+                            cuisine: "Cakes, Desserts"
+                        },
+                        { 
+                            id:89,
+                            name: "French Bakers", 
+                            rating: 4.2, 
+                            deliveryTime: "40-45 min", 
+                            price: "₹300-₹800", 
+                            address: "Vaishali Nagar, Jaipur",
+                            offers: ["Birthday Special", "Free Candles"],
+                            cuisine: "Cakes, Pastries"
+                        },
+                        { 
+                            id:90,
+                            name: "JP Baking Company", 
+                            rating: 4.5, 
+                            deliveryTime: "35-40 min", 
+                            price: "₹250-₹600", 
+                            address: "Vaishali Nagar, Jaipur",
+                            offers: ["Custom Cake Discount", "Free Delivery"],
+                            cuisine: "Cakes, Desserts"
+                        }
+                    ],
+                    "paratha": [
+                        { 
+                            id:91,
+                            name: "Paratha Hi Paratha", 
+                            rating: 4.7, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹200-₹400", 
+                            address: "Complex, Church Rd, Gopalbari",
+                            offers: ["Combo Meal", "Free Curd"],
+                            cuisine: "Paratha, North Indian"
+                        },
+                        { 
+                            id:92,
+                            name: "Paratha Corner", 
+                            rating: 4.2, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹250-₹450", 
+                            address: "SKIT, Jagatpura",
+                            offers: ["Family Pack", "Extra Pickle"],
+                            cuisine: "North Indian, Paratha"
+                        },
+                        { 
+                            id:93,
+                            name: "Sagar Paratha Centre", 
+                            rating: 4.0, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹150-₹300", 
+                            address: "Sansar Chandra Rd, Patel Colony",
+                            offers: ["Buy 3 Get 1 Free", "Butter Special"],
+                            cuisine: "Paratha, Street Food"
+                        }
+                    ],
+                    "north indian": [
+                        { 
+                            id:94,
+                            name: "Suvarna Mahal", 
+                            rating: 4.7, 
+                            deliveryTime: "20-25 min", 
+                            price: "₹1350-₹1700", 
+                            address: "Rambagh Palace, Jaipur",
+                            offers: ["Thali Special", "Free Papad"],
+                            cuisine: "North Indian, Sweets"
+                        },
+                        { 
+                            id:95,
+                            name: "Cinnamon", 
+                            rating: 4.2, 
+                            deliveryTime: "25-30 min", 
+                            price: "₹300-₹650", 
+                            address: "Jai Mahal Palace,Jaipur",
+                            offers: ["Rajasthani Thali", "10% OFF"],
+                            cuisine: "North Indian, Rajasthani"
+                        },
+                        { 
+                            id:96,
+                            name: "Spice Court", 
+                            rating: 4.6, 
+                            deliveryTime: "30-35 min", 
+                            price: "₹400-₹800", 
+                            address: "Civil Lines, Jaipur",
+                            offers: ["Pure Veg Special", "Free Sweet"],
+                            cuisine: "North Indian"
+                        }
+                    ]
+                },
+            },
+            
+            init() {
+                this.currentCity = document.getElementById('current-city').textContent;
+                this.setupEventListeners();
+            },
+            
+            setupEventListeners() {
+                // City change listeners
+                document.querySelectorAll('.location-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        this.currentCity = option.dataset.city;
+                        document.getElementById('current-city').textContent = option.dataset.city;
+                    });
+                });
+            },
+            
+            openForCuisine(cuisine) {
+                this.currentCuisine = cuisine.toLowerCase();
+                const modal = new bootstrap.Modal(document.getElementById('zomexaModal'));
+                this.clearMessages();
+                modal.show();
+                
+                // Show typing indicator
+                this.showTypingIndicator();
+                
+                // Show recommendations after delay
+                setTimeout(() => {
+                    this.removeTypingIndicator();
+                    this.showWelcomeMessage();
+                    
+                    // If cuisine is specified, show recommendations
+                    if (this.currentCuisine) {
+                        setTimeout(() => {
+                            this.showCuisineRecommendations();
+                        }, 500);
+                    }
+                }, 1000);
+            },
+            
+            showWelcomeMessage() {
+                const user = UserSystem.currentUser;
+                
+                if (user) {
+                    this.showMessage(`Hi ${user.firstName}! 👋 I'm Zomexa, your personal food assistant. I'll help you discover the best ${this.currentCuisine ? this.currentCuisine + ' ' : ''}restaurants in ${this.currentCity}.`, 'bot');
+                } else {
+                    this.showMessage(`Welcome to Zomito! 🎉 I'm Zomexa, your personal food assistant. To get personalized recommendations, please login or sign up first.`, 'bot');
+                    this.showLoginPrompt();
+                }
+            },
+            
+            showCuisineRecommendations() {
+                const user = UserSystem.currentUser;
+                const cuisine = this.currentCuisine;
+                
+                if (!user) {
+                    this.showMessage(`To see the best ${cuisine} places in ${this.currentCity}, please login or sign up first.`, 'bot');
+                    this.showLoginPrompt();
+                    return;
+                }
+                
+                const restaurants = this.getRestaurantsForCuisine(cuisine, this.currentCity);
+                
+                if (!restaurants || restaurants.length === 0) {
+                    this.showMessage(`I couldn't find ${cuisine} restaurants in ${this.currentCity} right now. Try another cuisine or check back later!`, 'bot');
+                    return;
+                }
+                
+                this.showMessage(`🍽️ **Best ${cuisine.charAt(0).toUpperCase() + cuisine.slice(1)} Places in ${this.currentCity}**\n\nBased on ratings, delivery time, and user reviews:`, 'bot');
+                
+                restaurants.forEach((restaurant, index) => {
+                    setTimeout(() => {
+                        this.showRestaurantCard(restaurant);
+                    }, index * 300);
+                });
+                
+                // Show first order discount if applicable
+                if (!user.hasOrdered) {
+                    setTimeout(() => {
+                        this.showMessage(`🎁 **FIRST ORDER BONUS!**\nGet 30% OFF on your first order with code: WELCOME30\nApplied automatically at checkout.`, 'bot');
+                    }, restaurants.length * 300 + 500);
+                }
+            },
+            
+             getRestaurantsForCuisine(cuisine, city) {
+    const cityData = this.cityRestaurants[city];
+    if (!cityData) {
+        // Fallback to Ahmedabad if city not found
+        return this.cityRestaurants["Ahmedabad"][cuisine] || null;
+    }
+    
+    // Try exact match first
+    if (cityData[cuisine]) {
+        return cityData[cuisine];
+    }
+    
+    // Try fuzzy match (for variations)
+    for (const key in cityData) {
+        if (cuisine.toLowerCase().includes(key) || key.toLowerCase().includes(cuisine.toLowerCase())) {
+            return cityData[key];
+        }
+    }
+    
+    return null;
+},
+            
+// Replace this function in the Zomexa object
+showRestaurantCard(restaurant) {
+    const messagesContainer = document.getElementById('chatMessages');
+    const card = document.createElement('div');
+    card.className = 'restaurant-suggestion';
+    
+    card.innerHTML = `
+        <div class="restaurant-header">
+            <div class="restaurant-name">
+                ${restaurant.name}
+            </div>
+            <div class="restaurant-rating">
+                ⭐ ${restaurant.rating}
+            </div>
+        </div>
+        <div class="restaurant-details">
+            <div class="restaurant-detail">
+                <i class="fas fa-clock"></i>
+                <span>${restaurant.deliveryTime}</span>
+            </div>
+            <div class="restaurant-detail">
+                <i class="fas fa-rupee-sign"></i>
+                <span>${restaurant.price}</span>
+            </div>
+            <div class="restaurant-detail">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>${restaurant.address || this.currentCity}</span>
+            </div>
+            <div class="restaurant-detail">
+                <i class="fas fa-utensils"></i>
+                <span>${restaurant.cuisine}</span>
+            </div>
+        </div>
+        ${restaurant.offers ? `<div style="font-size: 0.8rem; color: #666; margin-top: 8px;">
+            <i class="fas fa-tag"></i> ${restaurant.offers[0]}
+        </div>` : ''}
+        <button class="explore-btn" onclick="window.location.href='restaurant.html?id=${restaurant.id}&city=${encodeURIComponent(this.currentCity)}&cuisine=${encodeURIComponent(restaurant.cuisine)}'">
+            <i class="fas fa-external-link-alt me-1"></i> Explore Restaurant
+        </button>
+    `;
+    
+    messagesContainer.appendChild(card);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+},            
+            showLoginPrompt() {
+                const messagesContainer = document.getElementById('chatMessages');
+                const prompt = document.createElement('div');
+                prompt.className = 'login-prompt';
+                
+                prompt.innerHTML = `
+                    <p style="margin-bottom: 10px;">Login or Sign up to unlock personalized recommendations:</p>
+                    <div class="login-prompt-buttons">
+                        <button class="login-btn" onclick="Zomexa.openLoginModal()">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <button class="signup-btn" onclick="Zomexa.openSignupModal()">
+                            <i class="fas fa-user-plus"></i> Sign Up
+                        </button>
+                    </div>
+                `;
+                
+                messagesContainer.appendChild(prompt);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            },
+            
+            openLoginModal() {
+                const zomexaModal = bootstrap.Modal.getInstance(document.getElementById('zomexaModal'));
+                zomexaModal.hide();
+                
+                setTimeout(() => {
+                    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                    loginModal.show();
+                }, 300);
+            },
+            
+            openSignupModal() {
+                const zomexaModal = bootstrap.Modal.getInstance(document.getElementById('zomexaModal'));
+                zomexaModal.hide();
+                
+                setTimeout(() => {
+                    const signupModal = new bootstrap.Modal(document.getElementById('signupModal'));
+                    signupModal.show();
+                }, 300);
+            },
+            
+            showMessage(text, sender) {
+                const messagesContainer = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${sender}-message`;
+                
+                const content = text.replace(/\n/g, '<br>');
+                messageDiv.innerHTML = content;
+                
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            },
+            
+            showTypingIndicator() {
+                const messagesContainer = document.getElementById('chatMessages');
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'typing-indicator';
+                typingDiv.id = 'typingIndicator';
+                
+                typingDiv.innerHTML = `
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                `;
+                
+                messagesContainer.appendChild(typingDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            },
+            
+            removeTypingIndicator() {
+                const typingIndicator = document.getElementById('typingIndicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            },
+            
+            clearMessages() {
+                const messagesContainer = document.getElementById('chatMessages');
+                messagesContainer.innerHTML = '';
+            }
+        };
+
+        // Function to open Zomexa for specific cuisine
+        function openZomexaForCuisine(cuisine) {
+            Zomexa.openForCuisine(cuisine);
+        }
+
+        // Function to ask Zomexa
+        function askZomexa(cuisine) {
+            Zomexa.currentCuisine = cuisine;
+            Zomexa.showCuisineRecommendations();
+        }
+
+        // Filter functions
+        function filterByCuisine(cuisine) {
+            openZomexaForCuisine(cuisine);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize User System
+            UserSystem.init();
+            
+            // Initialize Zomexa
+            Zomexa.init();
+            // Initialize Zomexa modal with smooth transitions
+
+});
+            
+            // Hide entrance transition
+            setTimeout(() => {
+                const entrance = document.getElementById('zomitoEntrance');
+                if (entrance) {
+                    entrance.classList.add('fade-out');
+                    setTimeout(() => {
+                        entrance.style.display = 'none';
+                    }, 500);
+                }
+            }, 2000);
+            
+            // Show Zomexa popup notification
+            setTimeout(() => {
+                const popup = document.getElementById('zomexaPopup');
+                popup.classList.add('show');
+            }, 3000);
+            
+            // Close Zomexa popup
+            document.getElementById('closeZomexaPopup').addEventListener('click', function() {
+                const popup = document.getElementById('zomexaPopup');
+                popup.classList.remove('show');
+            });
+            
+            // Auto-hide Zomexa popup after 10 seconds
+            setTimeout(() => {
+                const popup = document.getElementById('zomexaPopup');
+                if (popup.classList.contains('show')) {
+                    popup.classList.remove('show');
+                }
+            }, 10000);
+            
+            // Add event listeners to city options
+            document.querySelectorAll('.location-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const city = this.dataset.city;
+                    document.getElementById('current-city').textContent = city;
+                    Zomexa.currentCity = city;
+                });
+            });
+            
+            // Search functionality
+            const searchInput = document.querySelector('.search-input');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                // In a real app, this would filter restaurants
+            });
+            
+            // Add smooth scroll to navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') === '#') return;
+                    
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+            const zomexaModal = document.getElementById('zomexaModal');
+const modalInstance = new bootstrap.Modal(zomexaModal, {
+    backdrop: true,
+    keyboard: true,
+    focus: true
+});
+
+// Smooth close event
+zomexaModal.addEventListener('hidden.bs.modal', function () {
+    // Reset Zomexa state
+    Zomexa.currentCuisine = null;
+    Zomexa.clearMessages();
+    
+    // Add a small delay for smooth transition
+    setTimeout(() => {
+        const modalBackdrop = document.querySelector('.modal-backdrop');
+        if (modalBackdrop) {
+            modalBackdrop.style.transition = 'opacity 0.3s ease';
+            modalBackdrop.style.opacity = '0';
+            setTimeout(() => {
+                if (modalBackdrop && modalBackdrop.parentNode) {
+                    modalBackdrop.parentNode.removeChild(modalBackdrop);
+                }
+            }, 300);
+        }
+    }, 50);
+            // Add notification styles
+            const style = document.createElement('style');
+            style.textContent = `
+                .custom-notification {
+                    position: fixed;
+                    top: 100px;
+                    right: 30px;
+                    padding: 15px 25px;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+                    transform: translateX(120%);
+                    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                    z-index: 1100;
+                    max-width: 350px;
+                }
+                
+                .custom-notification.show {
+                    transform: translateX(0);
+                }
+                
+                .custom-notification.success {
+                    background: #4CAF50;
+                    color: white;
+                }
+                
+                .custom-notification.error {
+                    background: #F44336;
+                    color: white;
+                }
+                
+                .notification-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-weight: 500;
+                }
+                
+                .cart-notification {
+                    position: fixed;
+                    top: 150px;
+                    right: 30px;
+                    background: #4CAF50;
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 10px;
+                    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+                    transform: translateX(120%);
+                    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                    z-index: 1100;
+                }
+                
+                .cart-notification.show {
+                    transform: translateX(0);
+                }
+                
+                .cart-notification-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-weight: 500;
+                }
+                    
+                @media (max-width: 768px) {
+                    .custom-notification, .cart-notification, .zomexa-popup {
+                        right: 20px;
+                        left: 20px;
+                        max-width: none;
+                    }
+                    
+                    .zomexa-popup {
+                        top: 80px;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
